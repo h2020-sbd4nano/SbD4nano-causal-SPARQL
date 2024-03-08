@@ -1,0 +1,22 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sbdbel: <https://h2020-sbd4nano.github.io/sbdbel/>
+PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select distinct ?material ?cause ?relationship ?outcome ?doi_source
+ where {
+	?causalAssertion a sio:001183 .
+	?causalAssertion sbdbel:hasCause ?causeIri .
+	?causalAssertion sbdbel:hasRelationship ?relationshipIri .
+	?causalAssertion sbdbel:hasOutcome ?outcomeIri .
+	?outcomeIri rdfs:label ?outcome .
+	?causeIri rdfs:label ?cause .
+	?relationshipIri rdfs:label ?relationship. 
+	?causalAssertion sio:000339 ?reference .
+	?reference owl:sameAs ?doi_source . 
+  ?quote sio:000208 ?causalAssertion .
+  ?quote rdf:value ?text .
+	?causalAssertion sio:000332 ?material .
+  }
