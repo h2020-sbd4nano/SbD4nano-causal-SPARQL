@@ -1,0 +1,34 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sbdbel: <https://h2020-sbd4nano.github.io/sbdbel/>
+PREFIX sio: <http://semanticscience.org/resource/SIO_>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX bao: <http://www.bioassayontology.org/bao#>
+
+SELECT DISTINCT ?cause ?relationship ?outcome ?quote ?evidenceType ?labelEnd
+WHERE {
+    # Causal assertion details
+    ?causalAssertion a sio:001183 ;  # A causal assertion
+                     sio:000206 ?evidence ;
+                     sbdbel:hasCause ?causeIri ;
+                     sbdbel:hasRelationship ?relIri ;
+                     sbdbel:hasOutcome ?outcomeIri .
+                     
+    # Extract cause, relationship, and outcome
+    ?causeIri rdfs:label ?cause .
+    ?relIri rdfs:label ?relationship .
+    ?outcomeIri rdfs:label ?outcome .
+
+    # Evidence details
+    ?evidence sbdbel:quote ?quote ;
+              obo:ECO_9000001 ?assay . # Evidence uses an assay
+
+    ?assay a ?evidenceTypeIri ;
+              bao:BAO_0000209 ?measurementGroup . # Link to measurement group
+  	?measurementGroup bao:BAO_0000208 ?endpoint . # Endpoint measured?
+  	?endpoint rdfs:label ?labelEnd .		  
+  			  
+    ?evidenceTypeIri rdfs:label ?evidenceType . # Evidence types
+	
+}
