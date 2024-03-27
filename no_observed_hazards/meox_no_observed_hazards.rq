@@ -1,0 +1,51 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sbdbel: <https://h2020-sbd4nano.github.io/sbdbel/>
+PREFIX sio: <http://semanticscience.org/resource/SIO_>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cito: <http://purl.org/net/cito/>
+PREFIX aopo: <http://aopkb.org/aop_ontology#>
+PREFIX enm: <http://purl.enanomapper.org/onto/>
+PREFIX bao: <http://www.bioassayontology.org/bao#>
+PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
+
+select distinct ?erm ?materialLabel ?cause ?relationship ?outcome ?quote ?doi
+ where {
+	?causalAssertion a sio:001183 . # A causal assertion
+    ?causalAssertion sio:000206 ?evidence . # Which is supported by an evidence
+    ?evidence sbdbel:quote ?quote .
+    ?evidence cito:containsAssertionFrom ?source .
+    ?source owl:sameAs ?doi .
+    ?causalAssertion sbdbel:hasCause ?causeIri .
+    ?causeIri rdfs:label ?cause .
+    ?causalAssertion sbdbel:hasRelationship ?relIri .
+    ?relIri rdfs:label ?relationship .
+    ?causalAssertion sbdbel:hasOutcome ?outcomeIri .
+    ?outcomeIri rdfs:label ?outcome .
+    ?causalAssertion sio:000332 ?material .
+   	?material dcterms:identifier ?erm .
+    ?material a ?materialType .
+    ?materialType rdfs:label ?materialLabel .
+  	?reference owl:sameAs ?doi_source .                        # Get DOI from reference
+  	?causeIri rdfs:label ?cause .                              # labels
+  	?relationshipIri rdfs:label ?relationship .
+  	?outcomeIri rdfs:label ?outcome .
+	  ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .
+  	?materialType rdfs:subClassOf* npo:NPO_1541 .  # Filter for all subCasses of adverse "metal oxide"
+
+  FILTER ((regex(?relationship, "does_not") && (?outcomeSuperclassIri IN ( 
+    aopo:AdverseOutcome,
+    enm:ENM_0000037,  # Oxidative stress
+    bao:BAO_0000201,  # Percent inhibition
+    enm:ENM_0000018,  # Toxicological endpoint
+    obo:OAE_0000001,  # Adverse event
+    obo:GO_1902806,   # Negative regulation of cell cycle
+    obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
+    obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
+  ))) || (regex(?relationship, "does_not") && (?outcomeSuperclassIri IN ( 
+    bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
+    enm:NM_0000068,   # Viability
+    obo:GO_1903786    # Negative regulation of GSH
+  ))))
+}

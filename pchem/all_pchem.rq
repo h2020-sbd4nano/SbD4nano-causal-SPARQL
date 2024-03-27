@@ -1,0 +1,50 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sbdbel: <https://h2020-sbd4nano.github.io/sbdbel/>
+PREFIX sio: <http://semanticscience.org/resource/SIO_>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cito: <http://purl.org/net/cito/>
+PREFIX aopo: <http://aopkb.org/aop_ontology#>
+PREFIX enm: <http://purl.enanomapper.org/onto/>
+PREFIX bao: <http://www.bioassayontology.org/bao#>
+PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
+SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcomeSuperclass ?outcome ?quote ?doi
+WHERE {
+    # Match causal assertions and their supporting evidence
+    ?causalAssertion a sio:001183 ; 
+                     sio:000206 ?evidence ;
+                     sbdbel:hasCause ?causeIri ;
+                     sbdbel:hasRelationship ?relIri ;
+                     sbdbel:hasOutcome ?outcomeIri ;
+                     sio:000332 ?material .
+
+    # Extract quote and source
+    ?evidence sbdbel:quote ?quote ;
+              cito:containsAssertionFrom/owl:sameAs ?doi .
+
+	# Extract cause and relationsip labels. Find superclass 
+    ?causeIri rdfs:label ?cause .
+    ?relIri rdfs:label ?relationship .
+    ?outcomeIri rdfs:label ?outcome ;
+                rdfs:subClassOf* ?outcomeSuperclassIri .
+	?outcomeSuperclassIri rdfs:label ?outcomeSuperclass .
+
+    # Extract material details
+    ?material dcterms:identifier ?erm ;
+              a ?materialType .
+    ?materialType rdfs:label ?materialLabel .
+
+    # Filter by adverse relationships and outcomes
+    FILTER (
+        (?outcomeSuperclassIri IN ( 
+            obo:CHEMINF_000101,  # chemical substance quality
+            npo:NPO_1914,  # hydrodynamic size (TODO: will be subclass of size)
+            obo:PATO_0001241,  # physical object quality
+            npo:NPO_821,  # polydispersity
+            npo:NPO_274,  # shape
+            obo:PATO_0000117,  # size
+          	obo:NCIT_C54072 # Stability
+        ))
+    )
+}
