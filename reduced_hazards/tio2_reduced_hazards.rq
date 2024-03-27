@@ -29,10 +29,10 @@ WHERE {
     ?materialType rdfs:label ?materialLabel .                 # Get material type label
 
     {
-      ?materialType rdfs:subClassOf* npo:NPO_1541 .         # Ensure material type is subclass of GO
+      ?materialType rdfs:subClassOf* obo:CHEBI_134441 .         # Ensure material type is subclass of GO
     
     } UNION {
-      ?materialType rdfs:about npo:NPO_1541 .               # Also select causeIri if it is GO
+      ?materialType rdfs:about obo:CHEBI_134441 .               # Also select causeIri if it is GO
     }                     
 
     OPTIONAL {
@@ -40,7 +40,7 @@ WHERE {
     }
 
     FILTER (
-        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -51,7 +51,7 @@ WHERE {
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
         ))
         ||
-        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
             obo:GO_1903786    # Negative regulation of GSH

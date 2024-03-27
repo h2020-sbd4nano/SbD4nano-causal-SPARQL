@@ -8,36 +8,32 @@ PREFIX cito: <http://purl.org/net/cito/>
 PREFIX aopo: <http://aopkb.org/aop_ontology#>
 PREFIX enm: <http://purl.enanomapper.org/onto/>
 PREFIX bao: <http://www.bioassayontology.org/bao#>
+PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcomeSuperclass ?outcome ?quote ?doi
+SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcome ?quote ?doi
 WHERE {
-    # Match causal assertions and their supporting evidence
-    ?causalAssertion a sio:001183 ; 
-                     sio:000206 ?evidence ;
-                     sbdbel:hasCause ?causeIri ;
-                     sbdbel:hasRelationship ?relIri ;
-                     sbdbel:hasOutcome ?outcomeIri ;
-                     sio:000332 ?material .
+    ?causalAssertion a sio:001183 .                           # A causal assertion
+    ?causalAssertion sio:000206 ?evidence .                   # Which is supported by an evidence
+    ?evidence sbdbel:quote ?quote .                           # Get the quote
+    ?evidence cito:containsAssertionFrom/owl:sameAs ?doi .    # Get DOI from evidence
+    ?causalAssertion sbdbel:hasCause ?causeIri .              # Get cause
+    ?causeIri rdfs:label ?cause .                             # Get cause label
+    ?causalAssertion sbdbel:hasRelationship ?relIri .         # Get relationship
+    ?relIri rdfs:label ?relationship .                        # Get relationship label
+    ?causalAssertion sbdbel:hasOutcome ?outcomeIri .          # Get outcome
+    ?outcomeIri rdfs:label ?outcome .                         # Get outcome label
+    ?causalAssertion sio:000332 ?material .                   # Get material
+    ?material dcterms:identifier ?erm .                       # Get material identifier
+    ?material a ?materialType .                               # Get material type
+    ?materialType rdfs:label ?materialLabel .                 # Get material type label                 
 
-    # Extract quote and source
-    ?evidence sbdbel:quote ?quote ;
-              cito:containsAssertionFrom/owl:sameAs ?doi_source .
+    OPTIONAL {
+        ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
+    }
 
-	# Extract cause and relationsip labels. Find superclass 
-    ?causeIri rdfs:label ?cause .
-    ?relIri rdfs:label ?relationship .
-    ?outcomeIri rdfs:label ?outcome ;
-                rdfs:subClassOf* ?outcomeSuperclassIri .
-	?outcomeSuperclassIri rdfs:label ?outcomeSuperclass .
-
-    # Extract material details
-    ?material dcterms:identifier ?erm ;
-              a ?materialType .
-    ?materialType rdfs:label ?materialLabel .
-
-    # Filter by adverse relationships and outcomes
     FILTER (
-        (REGEX(?relationship, "positively") && (?outcomeSuperclassIri IN ( 
+        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -46,12 +42,12 @@ WHERE {
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
-        )))
+        ))
         ||
-        (REGEX(?relationship, "negatively") && (?outcomeSuperclassIri IN ( 
+        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
             obo:GO_1903786    # Negative regulation of GSH
-        )))
+        ))
     )
 }

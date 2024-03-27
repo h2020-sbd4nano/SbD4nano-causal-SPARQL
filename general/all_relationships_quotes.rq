@@ -8,6 +8,7 @@ PREFIX cito: <http://purl.org/net/cito/>
 PREFIX aopo: <http://aopkb.org/aop_ontology#>
 PREFIX enm: <http://purl.enanomapper.org/onto/>
 PREFIX bao: <http://www.bioassayontology.org/bao#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 
 SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcome ?quote ?doi
 WHERE {
@@ -23,15 +24,13 @@ WHERE {
     ?evidence sbdbel:quote ?quote ;
               cito:containsAssertionFrom/owl:sameAs ?doi .
 
-	# Extract cause and relationsip labels. 
+	# Extract cause and relationship labels. 
     ?causeIri rdfs:label ?cause .
     ?relIri rdfs:label ?relationship .
-    ?outcomeIri rdfs:label ?outcome ;
-
+    ?outcomeIri rdfs:label ?outcome .
 
     # Extract material details
     ?material dcterms:identifier ?erm ;
               a ?materialType .
     ?materialType rdfs:label ?materialLabel .
-
 }

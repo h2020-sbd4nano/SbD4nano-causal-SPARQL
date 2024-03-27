@@ -39,7 +39,6 @@ WHERE {
     FILTER (
         (?outcomeSuperclassIri IN ( 
             obo:CHEMINF_000101,  # chemical substance quality
-            npo:NPO_1914,  # hydrodynamic size (TODO: will be subclass of size)
             obo:PATO_0001241,  # physical object quality
             npo:NPO_821,  # polydispersity
             npo:NPO_274,  # shape

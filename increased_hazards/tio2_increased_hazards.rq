@@ -29,10 +29,10 @@ WHERE {
     ?materialType rdfs:label ?materialLabel .                 # Get material type label
 
     {
-      ?materialType rdfs:subClassOf* npo:NPO_1541 .         # Ensure material type is subclass of GO
+      ?materialType rdfs:subClassOf* obo:CHEBI_134441 .         # Ensure material type is subclass of GO
     
     } UNION {
-      ?materialType rdfs:about npo:NPO_1541 .               # Also select causeIri if it is GO
+      ?materialType rdfs:about obo:CHEBI_134441 .               # Also select causeIri if it is GO
     }                     
 
     OPTIONAL {
