@@ -11,7 +11,7 @@ PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?cellLine ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?cellLine ?expTime ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
 WHERE {
     ## Causal assertion
     ?causalAssertion a sio:001183 ;                           # A causal assertion
@@ -43,9 +43,9 @@ WHERE {
   	?ep_iri bao:BAO_0000182 ?units .
   	?ep_iri bao:BAO_0000108 ?measurement .
   	## Screening concentration
-  	?assayFormat bao:BAO_0000338 ?scIri ;  # Screening concentration
-                 bao:BAO_0002004 ?cellIri ;
-                 bao:BAO_0002833 ?expTime .
+  	?assayFormat bao:BAO_0000338 ?scIri ;  					 # Get screening concentration
+                 bao:BAO_0002004 ?cellIri ;					 # Get cell type
+                 bao:BAO_0002833 ?expTime .                  # Get exposure time
     ?scIri bao:BAO_0002666 ?dose ;
             bao:BAO_0000183 ?doseUnits .
     ?cellIri rdfs:label ?cellLine .
