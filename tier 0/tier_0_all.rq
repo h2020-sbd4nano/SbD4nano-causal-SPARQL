@@ -1,0 +1,24 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sbdbel: <https://h2020-sbd4nano.github.io/sbdbel/>
+PREFIX sio: <http://semanticscience.org/resource/SIO_>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX cito: <http://purl.org/net/cito/>
+PREFIX aopo: <http://aopkb.org/aop_ontology#>
+PREFIX enm: <http://purl.enanomapper.org/onto/>
+PREFIX bao: <http://www.bioassayontology.org/bao#>
+PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome
+WHERE {
+    ## Causal assertion
+    ?causalAssertion a sio:001183 .                           # A causal assertion
+    ?causalAssertion sbdbel:hasCause ?causeIri .              # Get cause
+    ?causeIri rdfs:label ?cause .                             # Get cause label
+    ?causalAssertion sbdbel:hasRelationship ?relIri ;         # Get relationship
+                     sbdbel:hasOutcome ?outcomeIri .          # Get outcome
+    ?relIri rdfs:label ?relationship .                        # Get relationship label
+    ?outcomeIri rdfs:label ?outcome .                         # Get outcome label
+}

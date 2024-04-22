@@ -11,36 +11,48 @@ PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcome ?quote ?doi
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
 WHERE {
-    ?causalAssertion a sio:001183 .                           # A causal assertion
-    ?causalAssertion sio:000206 ?evidence .                   # Which is supported by an evidence
-    ?evidence sbdbel:quote ?quote .                           # Get the quote
-    ?evidence cito:containsAssertionFrom/owl:sameAs ?doi .    # Get DOI from evidence
+    ## Causal assertion
+    ?causalAssertion a sio:001183 ;                           # A causal assertion
+                       sio:000206 ?evidence .                 # Which is supported by an evidence
+    ?evidence sbdbel:quote ?quote ;                           # Get the quote
+              cito:containsAssertionFrom/owl:sameAs ?doi .    # Get DOI from evidence
     ?causalAssertion sbdbel:hasCause ?causeIri .              # Get cause
     ?causeIri rdfs:label ?cause .                             # Get cause label
-    ?causalAssertion sbdbel:hasRelationship ?relIri .         # Get relationship
+    ?causalAssertion sbdbel:hasRelationship ?relIri ;         # Get relationship
+                     sbdbel:hasOutcome ?outcomeIri .          # Get outcome
     ?relIri rdfs:label ?relationship .                        # Get relationship label
-    ?causalAssertion sbdbel:hasOutcome ?outcomeIri .          # Get outcome
+
     ?outcomeIri rdfs:label ?outcome .                         # Get outcome label
+  	## Material
     ?causalAssertion sio:000332 ?material .                   # Get material
     ?material dcterms:identifier ?erm .                       # Get material identifier
     ?material a ?materialType .                               # Get material type
-    ?materialType rdfs:label ?materialLabel .                 # Get material type label
-
-    {
-      ?materialType rdfs:subClassOf* npo:NPO_1541 .         # Ensure material type is subclass of GO
-    
-    } UNION {
-      ?materialType rdfs:about npo:NPO_1541 .               # Also select causeIri if it is GO
-    }                     
+    ?materialType rdfs:label ?materialLabel .                 # Get material type label                 
+	## Assay
+  	?evidence obo:ECO_9000001 ?assay .
+    ?assay a ?assayType ;
+             bao:BAO_0000555 ?assayFormat .
+    ?assayType rdfs:label ?assayLabel .
+  	?assayFormat rdfs:type ?assayFormatClass .
+    ?assayFormatClass rdfs:label ?assayName .
+  	## Measure group & Endpoint
+  	?assay bao:BAO_0000209 ?mg_iri .
+  	?mg_iri bao:BAO_0000208 ?ep_iri .
+  	?ep_iri bao:BAO_0000182 ?units .
+  	?ep_iri bao:BAO_0000108 ?measurement .
+  	## Screening concentration
+  	?assayFormat bao:BAO_0000338 ?sc_iri .
+    ?sc_iri bao:BAO_0002666 ?dose ;
+            bao:BAO_0000183 ?doseUnits .
 
     OPTIONAL {
         ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
     }
 
     FILTER (
-        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -53,7 +65,7 @@ WHERE {
             bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
         ))
         ||
-        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
             obo:GO_1903786    # Negative regulation of GSH

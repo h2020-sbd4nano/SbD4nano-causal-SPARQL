@@ -11,7 +11,7 @@ PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?cellLine ?expTime ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
 WHERE {
     ## Causal assertion
     ?causalAssertion a sio:001183 ;                           # A causal assertion
@@ -39,13 +39,10 @@ WHERE {
     ?assayFormatClass rdfs:label ?assayName .
   	## Measure group & Endpoint
   	?assay bao:BAO_0000209 ?mg_iri .
-  	?mg_iri bao:BAO_0000208 ?ep_iri .
-  	?ep_iri bao:BAO_0000182 ?units .
-  	?ep_iri bao:BAO_0000108 ?measurement .
   	## Screening concentration
-  	?assayFormat bao:BAO_0000338 ?sc_iri .
-    ?sc_iri bao:BAO_0002666 ?dose ;
-            bao:BAO_0000183 ?doseUnits .
+  	?assayFormat bao:BAO_0000338 ?scIri ;  					 # Get screening concentration
+                 bao:BAO_0002004 ?cellIri ;					 # Get cell type
+    ?cellIri rdfs:label ?cellLine .
 
     OPTIONAL {
         ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
@@ -61,6 +58,8 @@ WHERE {
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
+            enm:ENM_0000038   # Uptake
+            bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
         ))
         ||
         (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 

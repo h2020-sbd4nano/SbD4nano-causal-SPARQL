@@ -11,48 +11,23 @@ PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome
 WHERE {
     ## Causal assertion
-    ?causalAssertion a sio:001183 ;                           # A causal assertion
-                       sio:000206 ?evidence .                 # Which is supported by an evidence
-    ?evidence sbdbel:quote ?quote ;                           # Get the quote
-              cito:containsAssertionFrom/owl:sameAs ?doi .    # Get DOI from evidence
+    ?causalAssertion a sio:001183 .                           # A causal assertion
     ?causalAssertion sbdbel:hasCause ?causeIri .              # Get cause
     ?causeIri rdfs:label ?cause .                             # Get cause label
     ?causalAssertion sbdbel:hasRelationship ?relIri ;         # Get relationship
                      sbdbel:hasOutcome ?outcomeIri .          # Get outcome
     ?relIri rdfs:label ?relationship .                        # Get relationship label
-
     ?outcomeIri rdfs:label ?outcome .                         # Get outcome label
-  	## Material
-    ?causalAssertion sio:000332 ?material .                   # Get material
-    ?material dcterms:identifier ?erm .                       # Get material identifier
-    ?material a ?materialType .                               # Get material type
-    ?materialType rdfs:label ?materialLabel .                 # Get material type label                 
-	## Assay
-  	?evidence obo:ECO_9000001 ?assay .
-    ?assay a ?assayType ;
-             bao:BAO_0000555 ?assayFormat .
-    ?assayType rdfs:label ?assayLabel .
-  	?assayFormat rdfs:type ?assayFormatClass .
-    ?assayFormatClass rdfs:label ?assayName .
-  	## Measure group & Endpoint
-  	?assay bao:BAO_0000209 ?mg_iri .
-  	?mg_iri bao:BAO_0000208 ?ep_iri .
-  	?ep_iri bao:BAO_0000182 ?units .
-  	?ep_iri bao:BAO_0000108 ?measurement .
-  	## Screening concentration
-  	?assayFormat bao:BAO_0000338 ?sc_iri .
-    ?sc_iri bao:BAO_0002666 ?dose ;
-            bao:BAO_0000183 ?doseUnits .
-         
+    
     OPTIONAL {
         ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
     }
 
     FILTER (
-        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -61,9 +36,11 @@ WHERE {
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
+            enm:ENM_0000038   # Uptake
+            bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
         ))
         ||
-        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
             obo:GO_1903786    # Negative regulation of GSH

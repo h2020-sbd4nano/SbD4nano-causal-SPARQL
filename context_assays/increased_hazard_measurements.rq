@@ -46,8 +46,13 @@ WHERE {
   	?assayFormat bao:BAO_0000338 ?sc_iri .
     ?sc_iri bao:BAO_0002666 ?dose ;
             bao:BAO_0000183 ?doseUnits .
+         
+    OPTIONAL {
+        ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
+    }
+
     FILTER (
-        (?relationship = "does_not_correlate" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -56,9 +61,11 @@ WHERE {
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
+            enm:ENM_0000038   # Uptake
+            bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
         ))
         ||
-        (?relationship = "does_not_correlate" && ?outcomeSuperclassIri IN ( 
+        (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
             obo:GO_1903786    # Negative regulation of GSH

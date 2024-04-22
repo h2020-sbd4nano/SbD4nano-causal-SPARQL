@@ -49,6 +49,8 @@ WHERE {
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
             obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
+            enm:ENM_0000038   # Uptake
+            bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
         ))
         ||
         (?relationship = "does_not_correlate" && ?outcomeSuperclassIri IN ( 
