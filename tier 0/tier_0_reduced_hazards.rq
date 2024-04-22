@@ -11,7 +11,7 @@ PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
-SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome
+SELECT DISTINCT ?cause ?relationship ?outcome
 WHERE {
     ## Causal assertion
     ?causalAssertion a sio:001183 .                           # A causal assertion
