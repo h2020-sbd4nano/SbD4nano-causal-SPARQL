@@ -33,4 +33,6 @@ WHERE {
     ?material dcterms:identifier ?erm ;
               a ?materialType .
     ?materialType rdfs:label ?materialLabel .
+FILTER (CONTAINS(STR(?doi), "https://doi.org/"))
+
 }

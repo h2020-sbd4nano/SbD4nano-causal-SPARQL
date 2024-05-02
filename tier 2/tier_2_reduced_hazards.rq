@@ -82,4 +82,6 @@ FILTER(STR(?measurement) != "#N/A" || !bound(?measurement))
 FILTER(STR(?units) != "#N/A" || !bound(?units))
 FILTER(STR(?doseUnits) != "#N/A" || !bound(?doseUnits))
 FILTER(STR(?cellIri) != "#N/A" || !bound(?cellIri))
+FILTER (CONTAINS(STR(?doi), "https://doi.org/"))
+
 }

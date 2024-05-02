@@ -31,7 +31,7 @@ WHERE {
     OPTIONAL {
         ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
     }
-
+    FILTER (CONTAINS(STR(?doi), "https://doi.org/"))
     FILTER (
         (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,

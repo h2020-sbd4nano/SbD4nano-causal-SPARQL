@@ -68,4 +68,6 @@ WHERE {
             obo:GO_1903786    # Negative regulation of GSH
         ))
     )
+FILTER (CONTAINS(STR(?doi), "https://doi.org/"))
+
 }
