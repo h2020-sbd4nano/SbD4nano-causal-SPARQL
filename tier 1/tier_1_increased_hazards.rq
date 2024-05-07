@@ -10,8 +10,9 @@ PREFIX enm: <http://purl.enanomapper.org/onto/>
 PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX efo: <http://www.ebi.ac.uk/efo/EFO_>
 
-SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?cellLine ?expTime ?dose ?doseUnits ?measurement ?units ?assayName ?quote ?doi
+SELECT DISTINCT ?materialLabel ?erm ?cause ?relationship ?outcome ?cellLine ?assayName ?quote ?doi
 WHERE {
     ## Causal assertion
     ?causalAssertion a sio:001183 ;                           # A causal assertion
@@ -37,11 +38,8 @@ WHERE {
     ?assayType rdfs:label ?assayLabel .
   	?assayFormat rdfs:type ?assayFormatClass .
     ?assayFormatClass rdfs:label ?assayName .
-  	## Measure group & Endpoint
-  	?assay bao:BAO_0000209 ?mg_iri .
   	## Screening concentration
-  	?assayFormat bao:BAO_0000338 ?scIri ;  					 # Get screening concentration
-                 bao:BAO_0002004 ?cellIri ;					 # Get cell type
+  	?assayFormat bao:BAO_0002004 ?cellIri .				 # Get cell type
     ?cellIri rdfs:label ?cellLine .
 
     OPTIONAL {

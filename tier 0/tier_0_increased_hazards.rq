@@ -10,6 +10,7 @@ PREFIX enm: <http://purl.enanomapper.org/onto/>
 PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX efo: <http://www.ebi.ac.uk/efo/EFO_>
 
 SELECT DISTINCT ?cause ?relationship ?outcome
 WHERE {
@@ -28,6 +29,8 @@ WHERE {
 
     FILTER (
         (?relationship = "positively" && ?outcomeSuperclassIri IN ( 
+            bao:BAO_0000201,  # Percent inhibition
+            enm:ENM_0000018,  # Toxicological endpoint
             aopo:AdverseOutcome,
             enm:ENM_0000037,  # Oxidative stress
             bao:BAO_0000201,  # Percent inhibition
@@ -38,12 +41,20 @@ WHERE {
             obo:GO_1901800,    # Positive regulation of proteasomal protein catabolic process
             enm:ENM_0000038,   # Uptake
             bao:BAO_0000181,   # Response endpoints (e.g. % inhibition)
+          	efo:0004503,		   # hematological measurements
+            efo:0004872,		  # inflammatory biomarker measurement
+            efo:0801080,   # Oxidative stress biomarker measurement
+          	efo:0004352,   # mortality
+          	efo:0004873,    # cytokine measurement
+          	enm:ENM_0000045,  # transport across barrier
+          	enm:ENM_0000038   # uptake
         ))
         ||
         (?relationship = "negatively" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
-            obo:GO_1903786    # Negative regulation of GSH
+            obo:GO_1903786,    # Negative regulation of GSH
+          	npo:NPO_1816 	   # % cell viability
         ))
     )
 }

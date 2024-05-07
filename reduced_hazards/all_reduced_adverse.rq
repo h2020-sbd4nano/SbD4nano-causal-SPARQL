@@ -10,6 +10,8 @@ PREFIX enm: <http://purl.enanomapper.org/onto/>
 PREFIX bao: <http://www.bioassayontology.org/bao#>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX efo: <http://www.ebi.ac.uk/efo/EFO_>
+
 
 SELECT DISTINCT ?erm ?materialLabel ?cause ?relationship ?outcome ?quote ?doi
 WHERE {
@@ -31,7 +33,7 @@ WHERE {
     OPTIONAL {
         ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .  # Get outcome superclass
     }
-    FILTER (CONTAINS(STR(?doi), "https://doi.org/"))
+
     FILTER (
         (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
             aopo:AdverseOutcome,
@@ -41,15 +43,23 @@ WHERE {
             obo:OAE_0000001,  # Adverse event
             obo:GO_1902806,   # Negative regulation of cell cycle
             obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
-            obo:GO_1901800    # Positive regulation of proteasomal protein catabolic process
-            enm:ENM_0000038   # Uptake
-            bao:BAO_0000181   # Response endpoints (e.g. % inhibition)
+            obo:GO_1901800,    # Positive regulation of proteasomal protein catabolic process
+            enm:ENM_0000038,   # Uptake
+            bao:BAO_0000181,   # Response endpoints (e.g. % inhibition)
+          	efo:0004503,		   # hematological measurements
+            efo:0004872,		  # inflammatory biomarker measurement
+            efo:0801080,   # Oxidative stress biomarker measurement
+          	efo:0004352,   # mortality
+          	efo:0004873,    # cytokine measurement
+          	enm:ENM_0000045,  # transport across barrier
+          	enm:ENM_0000038   # uptake
         ))
         ||
         (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
             bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
             enm:NM_0000068,   # Viability
-            obo:GO_1903786    # Negative regulation of GSH
+            obo:GO_1903786,    # Negative regulation of GSH
+          	npo:NPO_1816 	   # % cell viability
         ))
     )
 }
