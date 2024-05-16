@@ -12,7 +12,7 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX efo: <http://www.ebi.ac.uk/efo/EFO_>
 
-SELECT DISTINCT ?erm ?materialType ?materialLabel ?cause ?relationship ?outcome ?quote ?doi ?hazard_reduction ?causeComment ?outcomeComment
+SELECT DISTINCT ?erm ?materialType ?materialLabel ?cause ?relationship ?outcome ?quote ?doi ?hazard_reduction ?hazard_increase ?hazard_no_effect ?causeComment ?outcomeComment
 WHERE {
     # Match causal assertions and their supporting evidence
     ?causalAssertion a sio:001183 ; 
@@ -70,6 +70,42 @@ WHERE {
             )
         } AS ?hazard_reduction
     )
+
+      # Hazard increase calculation
+    BIND(
+        EXISTS {
+            ?outcomeIri rdfs:subClassOf* ?outcomeSuperclassIri .
+            FILTER (
+                (?relationship = "positively_correlates" && ?outcomeSuperclassIri IN ( 
+                    aopo:AdverseOutcome,
+                    enm:ENM_0000037,  # Oxidative stress
+                    bao:BAO_0000201,  # Percent inhibition
+                    enm:ENM_0000018,  # Toxicological endpoint
+                    obo:OAE_0000001,  # Adverse event
+                    obo:GO_1902806,   # Negative regulation of cell cycle
+                    obo:GO_0051494,   # Negative regulation of cytoskeleton regulation
+                    obo:GO_1901800,    # Positive regulation of proteasomal protein catabolic process
+                    enm:ENM_0000038,   # Uptake
+                    bao:BAO_0000181,   # Response endpoints (e.g. % inhibition)
+                    efo:0004503,		   # hematological measurements
+                    efo:0004872,		  # inflammatory biomarker measurement
+                    efo:0801080,   # Oxidative stress biomarker measurement
+                    efo:0004352,   # mortality
+                    efo:0004873,    # cytokine measurement
+                    enm:ENM_0000045,  # transport across barrier
+                    enm:ENM_0000038   # uptake
+                ))
+                ||
+                (?relationship = "negatively_correlates" && ?outcomeSuperclassIri IN ( 
+                    bao:BAO_0002162,  # Concentration response endpoints (IC, EC, AC, LC)
+                    enm:NM_0000068,   # Viability
+                    obo:GO_1903786,    # Negative regulation of GSH
+                    npo:NPO_1816 	   # % cell viability
+                ))
+            )
+        } AS ?hazard_increase
+    )
+  
 
     # Extract cause comment using property path
     OPTIONAL { ?causeIri (obo:IAO_0000115|rdfs:comment|dcterms:description) ?causeComment }
