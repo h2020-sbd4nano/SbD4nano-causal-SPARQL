@@ -12,7 +12,7 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX npo: <http://purl.bioontology.org/ontology/npo#>
 PREFIX efo: <http://www.ebi.ac.uk/efo/EFO_>
 
-SELECT DISTINCT ?erm ?materialType ?materialLabel ?cause ?relationship ?outcome ?quote ?doi ?hazard_reduction ?hazard_increase ?hazard_no_effect ?causeComment ?outcomeComment
+SELECT DISTINCT ?materialType ?materialLabel ?cause ?causeIri ?outcomeIri ?relationship ?outcome ?quote ?doi ?hazard_reduction ?hazard_increase ?causeComment ?outcomeComment
 WHERE {
     # Match causal assertions and their supporting evidence
     ?causalAssertion a sio:001183 ; 
